@@ -1,25 +1,46 @@
 class Tile {
-    constructor( x, y, length, color) {
-        this.X = x
-        this.Y = y
-        this.Length = length
-        this.Color = color
+    constructor( ctx, x, y, length, color, column, row) {
+        this.ctx = ctx
+        this.x = x
+        this.y = y
+        this.length = length
+        this.color = color
+        this.column = column
+        this.row = row
     }
 
-    set Piece( piece ) {
-        assert( piece instanceof Piece, "Tile.Piece must be a Piece object." )
-        piece.X = this.X + this.Length/2 - piece.Length/2
-        piece.Y = this.Y + this.Length/2 - piece.Length/2
+    set highlighted( highlighted ) {
+        if( highlighted ) {
+            this.effectsColor = this.ctx.createRadialGradient(this.x + this.length/2, this.y + this.length/2, this.length/16, this.x + this.length/2, this.y + this.length/2, this.length)
+            this.effectsColor.addColorStop(0, 'rgba(25, 25, 255, 1)')
+            this.effectsColor.addColorStop(1, 'rgba(25, 25, 255, 0)')
+        }
+        else
+            this.effectsColor = null
+    }
+
+
+    set piece( piece ) {
+        assert( piece instanceof Piece, "Tile.piece must be a Piece object." )
+        piece.x = this.x + this.length/2 - piece.length/2
+        piece.y = this.y + this.length/2 - piece.length/2
         this._Piece = piece
     }
-    get Piece() {
+    get piece() {
         return this._Piece
     }
 
-    render( ctx ) {
-        ctx.fillStyle = this.Color
-        ctx.fillRect( this.X, this.Y, this.Length, this.Length )
-        if( this.Piece )
-            this.Piece.render( ctx )
+    render() {
+        this.ctx.fillStyle = this.color
+        this.ctx.fillRect( this.x, this.y, this.length, this.length )
+        if(this.effectsColor) {
+            this.ctx.fillStyle = this.effectsColor
+            this.ctx.fillRect( this.x, this.y, this.length, this.length )
+            this.ctx.strokeWidth = '1px'
+            this.ctx.strokeStyle = 'blue'
+            this.ctx.strokeRect( this.x+1, this.y+1, this.length-2, this.length-2 )
+        }
+        if( this.piece )
+            this.piece.render()
     }
 }

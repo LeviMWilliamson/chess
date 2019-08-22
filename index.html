@@ -9,109 +9,27 @@
         <canvas id='game'></canvas>
         <script src='Board.js'></script>
         <script src='Tile.js'></script>
+        <script src='Team.js'></script>
+        <script src='Blackteam.js'></script>
+        <script src='WhiteTeam.js'></script>
         <script src='Piece.js'></script>
+        <script src='Pawn.js'></script>
+        <script src='BlackPawn.js'></script>
+        <script src='WhitePawn.js'></script>
         <script>
-
-        function assert(condition, message) {
+            function assert(condition, message) {
                 if(!condition)
                     throw new Error(message);
             }
 
-            const Teams = {
-                BLACK: 0,
-                WHITE: 1
-            }
-
-            class Pawn extends Piece {
-                constructor( x, y, length, hue ) {
-                    super( x, y, length, hue )
-                    this.DoubleStepped = false
-                }
-
-                render( ctx ) {
-                    ctx.fillStyle = `hsl(${this.Hue}, 32%, 50%)`
-                    ctx.strokeStyle = `hsl(${this.Hue}, 16%, 25%)`
-                    ctx.lineWidth = this.Length/16
-
-                    ctx.beginPath()
-                    ctx.arc( this.X + this.Length/2, this.Y + this.Length/2, this.Length/2, 0, 2*Math.PI, true )
-                    ctx.closePath()
-                    ctx.fill()
-                    ctx.stroke()
-
-                    ctx.beginPath()
-                    ctx.arc( this.X + this.Length*1/2, this.Y + this.Length*1/2, this.Length/4, 0, 2*Math.PI, true )
-                    ctx.closePath()
-                    ctx.stroke()
-                }
-            }
-
-            class BlackPawn extends Pawn {
-                constructor( x, y, length ) {
-                    this.Team = Teams.BLACK
-                    this.Hue = 32
-                }
-            }
-
-            class BlackPawnController {
-                constructor( black_pawn, board, col, row ) {
-                    this.Pawn = black_pawn
-                    this.Board = board
-                    this.Column = col
-                    this.Row = row
-                }
-                get PotentialMoves() {
-                    let moveset = this.MoveSet
-                    let actions = {}
-                    actions.Move =  moveset.Move.filter( 
-                        (col, row) => board.viewTile(col + this.Col, row + this.Row) == null
-                    )
-                    actions.Attack = moveset.Attack.filter( 
-                        (col, row) => board.viewTile(col + this.Col, row + this.Row) instanceof Piece 
-                    )
-                    if( this.Row == 1 )
-                        actions.DoubleStep = moveset.DoubleStep.filter( 
-                            (col, row) => board.viewTile(col + this.Col, row + this.Row) == null
-                        )
-                    if( this.Row == 4 )
-                        actions.EnPassant = moveset.EnPassant.filter( 
-                            (col, row) => {
-                                let adjacent_tile = board.viewTile( col + this.Col, row + this.Row - 1 )
-                                if( adjacent_tile instanceof WhitePawn && adjacent_tile.DoubleStepped )
-                                    return board.viewTile(col + this.Col, row + this.Row ) == null;
-                                else 
-                                    return false
-                            }
-                        )
-                }
-
-                get MoveSet() {
-                    return {
-                        Move: [
-                            [0, 1]
-                        ],
-                        Attack: [
-                            [1, 1],
-                            [1, -1]
-                        ],
-                        DoubleStep: [
-                            [0, 2]
-                        ],
-                        EnPassant: [
-                            [1, 1],
-                            [1, -1]
-                        ]
-                    }
-                }
-            }
-
             const canvas = document.getElementById('game')
             const context = canvas.getContext('2d')
-            context.translate(0.5, 0.5)
 
-            const board = new Board()
-            for(let i=0; i<board.Width; i++)
-                board.movePiece( new Pawn( 0, 0, board.TileLength/2, 32 ), i, 1)
+            const board = new Board( context )
+            for(let i=0; i<board.width; i++) {
+                board.movePiece( new BlackPawn( context, board, board.tiles[i][1] ), i, 1)
+                board.movePiece( new WhitePawn( context, board, board.tiles[i][6] ), i, 6)
+            }
 
             function render() {
                 board.render( context )
@@ -124,7 +42,6 @@
             }
             refreshCanvas();
             //window.onresize = refreshCanvas
-
         </script>
     </body>
 </html>
