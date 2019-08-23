@@ -14,8 +14,12 @@
         <script src='WhiteTeam.js'></script>
         <script src='Piece.js'></script>
         <script src='Pawn.js'></script>
+        <script src='Rook.js'></script>
         <script src='BlackPawn.js'></script>
+        <script src='BlackRook.js'></script>
         <script src='WhitePawn.js'></script>
+        <script src='WhiteRook.js'></script>
+        <script src='Controller.js'></script>
         <script>
             function assert(condition, message) {
                 if(!condition)
@@ -27,12 +31,26 @@
 
             const board = new Board( context )
             for(let i=0; i<board.width; i++) {
-                board.movePiece( new BlackPawn( context, board, board.tiles[i][1] ), i, 1)
-                board.movePiece( new WhitePawn( context, board, board.tiles[i][6] ), i, 6)
+                const row1_tile = board.viewTile(i, 1)
+                const row6_tile = board.viewTile(i, 6)
+                board.movePiece( new BlackPawn( context, board, row1_tile ), row1_tile)
+                board.movePiece( new WhitePawn( context, board, row6_tile ), row6_tile)
             }
+            const top_left_tile = board.viewTile(0, 0)
+            board.movePiece( new BlackRook( context, board, top_left_tile ), top_left_tile )
+            const top_right_tile = board.viewTile(7, 0)
+            board.movePiece( new BlackRook( context, board, top_right_tile ), top_right_tile )
+            
+            const bot_left_tile = board.viewTile(0, 7)
+            board.movePiece( new WhiteRook( context, board, bot_left_tile ), bot_left_tile )
+            const bot_right_tile = board.viewTile(7, 7)
+            board.movePiece( new WhiteRook( context, board, bot_right_tile ), bot_right_tile )
+            
+
+            const controller = new Controller(canvas, board)
 
             function render() {
-                board.render( context )
+                board.render()
             }
 
             function refreshCanvas() {

@@ -44,8 +44,13 @@ class BlackPawn extends Pawn {
                 !this.board.viewTile(col, row).piece
         )
         actions.attack = validFilter(translateMap(moveset.attack)).filter( 
-            ([col, row]) => 
-                this.board.viewTile(col, row).piece instanceof Piece 
+            ([col, row]) => {
+                let piece = this.board.viewTile(col, row).piece
+                if(piece)
+                    return !(piece.team instanceof this.team.constructor)
+                else
+                    return false
+            }
         )
 
         if( this.tile.row == 1 ) {

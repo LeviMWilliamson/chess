@@ -17,17 +17,26 @@ class Tile {
         }
         else
             this.effectsColor = null
+        this.render()
     }
 
 
     set piece( piece ) {
-        assert( piece instanceof Piece, "Tile.piece must be a Piece object." )
-        piece.x = this.x + this.length/2 - piece.length/2
-        piece.y = this.y + this.length/2 - piece.length/2
-        this._Piece = piece
+        if( piece === null )
+            this._Piece = piece
+        else {
+            assert( piece instanceof Piece, "Tile.piece must be a Piece object." )
+            piece.x = this.x + this.length/2 - piece.length/2
+            piece.y = this.y + this.length/2 - piece.length/2
+            this._Piece = piece
+        }
     }
     get piece() {
         return this._Piece
+    }
+
+    hasPiece() {
+        return !!this._Piece
     }
 
     render() {

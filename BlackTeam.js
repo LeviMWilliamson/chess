@@ -1,5 +1,5 @@
 class BlackTeam extends Team {
     constructor() {
-        super( 8 )
+        super( 'black', 8 )
     }
 }

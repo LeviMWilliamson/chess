@@ -2,9 +2,6 @@ class Board {
 
     constructor( ctx ) {
         this.ctx = ctx
-
-        this.selected = null
-        this.turn = 'black'
         // Defaults
         this.colors = ['black', 'white']
         // width in tiles
@@ -24,64 +21,6 @@ class Board {
             for(let j=0; j<this.height; j++)
                 this.tiles[i][j] = new Tile( ctx, this.x + i*this.tileLength, this.y + j*this.tileLength, this.tileLength, this.colors[ (i+j)%2 ], i, j)
         }
-        canvas.addEventListener('click', mouseEvent => {
-            const col = Math.floor( (mouseEvent.clientX - this.x) / this.tileLength )
-            const row = Math.floor( (mouseEvent.clientY - this.y) / this.tileLength )
-
-            if( col >= 0 && col < this.width && row >= 0 && row < this.height ) {
-                const tile = this.tiles[col][row]
-                if( tile.piece instanceof Piece ) {
-                    
-                    if(!this.selected) {
-                        this.selected = tile.piece
-                        for( let row of this.tiles ) {
-                            for( let tile of row ) {
-                                tile.highlighted = false
-                                tile.render()
-                            }
-                        }
-                        tile.highlighted = true
-                        tile.render()
-                        const moves = tile.piece.potentialMoves
-                        const passive_moves = [ ...moves.move, ...moves.doubleStep ]
-                        for( let move of passive_moves) {
-                            let move_tile = this.tiles[ move[0] ][ move[1] ]
-                            move_tile.highlighted = true
-                            move_tile.render()
-                        }
-                    }
-
-                }
-                else {
-                    if(this.selected) {
-                        const moves = this.selected.potentialMoves
-                        const passive_moves = [ ...moves.move, ...moves.doubleStep ]
-                        const tile_is_move = passive_moves.find( 
-                            ([move_col, move_row]) => move_col == col && move_row == row )
-                        if( tile_is_move ) {
-                            this.movePiece(this.selected, col, row)
-                            this.selected = null
-                            for( let row of this.tiles ) {
-                                for( let tile of row ) {
-                                    tile.highlighted = false
-                                    tile.render()
-                                }
-                            }
-                            this.render()
-                        }
-                    }
-                }
-            }
-            else {
-                this.selected = null
-                for( let row of this.tiles ) {
-                    for( let tile of row ) {
-                        tile.highlighted = false
-                        tile.render()
-                    }
-                }
-            }
-        })
     }
 
     /**
@@ -152,15 +91,41 @@ class Board {
         return this.tiles[tile_col][tile_row]
     }
 
+    tileFromCoordinates(x, y) {
+        const col = Math.floor( (x - this.x) / this.tileLength )
+        const row = Math.floor( (y - this.y) / this.tileLength )
+        if( this.validTile(col, row) )
+            return this.tiles[col][row]
+        else
+            return null
+    }
+
     /**
      * Moves piece to tile
      */
-    movePiece( piece, tile_col, tile_row ) {
-        assert( tile_col >= 0 && tile_col < this.width, "Attempted to move piece horizontally off the board." )
-        assert( tile_row >= 0 && tile_row < this.height, "Attempted to move piece vertically off the board." )
-        const tile = this.tiles[tile_col][tile_row]
+    movePiece( piece, tile) {
+        assert( piece instanceof Piece, "Attempted to move an object that is not a piece." )
+        assert( tile instanceof Tile, "Attempted to move a piece to an object other than a tile." )
+
+        const old_tile = piece.tile
+        old_tile.piece = null
+
         tile.piece = piece
         piece.tile = tile
+
+        tile.render()
+        old_tile.render()
+    }
+
+    /**
+     * Removes highlighting from every tile
+     */
+    removeHighlights() {
+        for( let row of this.tiles ) {
+            for( let tile of row ) {
+                tile.highlighted = false
+            }
+        }
     }
 
     /**

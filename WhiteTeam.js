@@ -1,5 +1,5 @@
 class WhiteTeam extends Team {
     constructor() {
-        super( 36 )
+        super( 'white', 36 )
     }
 }

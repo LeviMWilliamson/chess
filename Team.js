@@ -1,5 +1,6 @@
 class Team {
-    constructor(hue) {
+    constructor(name, hue) {
+        this.name = name
         this.hue = hue
     }
 }
