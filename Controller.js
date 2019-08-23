@@ -24,6 +24,7 @@ class Controller {
                         if( tile_attackable ) {
                             this.board.movePiece(this.selected, tile)
                             this.deselect()
+                            this.changeTurns()
                         }
                     }
                     else {
@@ -48,10 +49,30 @@ class Controller {
                         const tile_is_move = passive_moves.find( 
                             ([move_col, move_row]) => move_col == tile.column && move_row == tile.row 
                         )
+                        let tile_is_enPassant = false
+                        if( moves.enPassant )
+                            tile_is_enPassant = moves.enPassant.find(
+                                ([move_col, move_row]) => move_col == tile.column && move_row == tile.row 
+                            )
+
                         if( tile_is_move ) {
                             this.board.movePiece(this.selected, tile)
+                            if( moves.doubleStep && moves.doubleStep.find( ([move_col, move_row]) => move_col == tile.column && move_row == tile.row ) )
+                                this.selected.doubleStepped = true
                             this.deselect()
+                            this.changeTurns()
                         }
+                        else if( tile_is_enPassant ) {
+                            this.board.movePiece(this.selected, tile)
+                            if( this.selected.team instanceof BlackTeam )
+                                this.board.tiles[ tile.column ][ tile.row-1 ].piece = null
+                            else if( this.selected.team instanceof WhiteTeam )
+                                this.board.tiles[ tile.column ][ tile.row+1 ].piece = null
+                            this.deselect()
+                            this.changeTurns()
+                        }
+                        else
+                            this.deselect()
                     }
                 }
             }
@@ -67,4 +88,11 @@ class Controller {
         this.board.removeHighlights()
     }
     
+    changeTurns() {
+        if( this.turn == 'white' )
+            this.turn = 'black'
+        else
+            this.turn = 'white'
+    }
+
 }

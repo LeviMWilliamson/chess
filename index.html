@@ -54,8 +54,8 @@
             }
 
             function refreshCanvas() {
-                canvas.width = window.innerWidth
-                canvas.height = window.innerHeight
+                canvas.width = board.width * board.tileLength
+                canvas.height = board.height * board.tileLength
                 render()
             }
             refreshCanvas();

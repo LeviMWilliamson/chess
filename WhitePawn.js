@@ -57,11 +57,12 @@ class WhitePawn extends Pawn {
         else
             actions.doubleStep = []
 
-        if( this.tile.row == 4 )
+        if( this.tile.row == 3 )
             actions.enPassant = validFilter(translateMap(moveset.enPassant)).filter( 
                 ([col, row]) => {
-                    const adjacent_tile = board.viewTile(col-1, row)
-                    if( adjacent_tile.piece instanceof WhitePawn && adjacent_tile.DoubleStepped )
+                    const adjacent_tile = board.viewTile(col, row+1)
+                    console.log(adjacent_tile)
+                    if( adjacent_tile.piece instanceof BlackPawn && adjacent_tile.piece.doubleStepped )
                         return !board.viewTile(col, row).piece
                     else 
                         return false

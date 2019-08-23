@@ -11,8 +11,8 @@ class Board {
         // length in Pixels
         this.tileLength = 64
         // Position
-        this.x = window.innerWidth/2 - ( this.width * this.tileLength )/2
-        this.y = window.innerHeight/2 - ( this.height * this.tileLength )/2
+        this.x = 0
+        this.y = 0
         // Place tiles
         this.tiles = []
         for(let i=0; i<this.width; i++) {

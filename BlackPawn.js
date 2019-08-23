@@ -65,8 +65,8 @@ class BlackPawn extends Pawn {
         if( this.tile.row == 4 )
             actions.enPassant = validFilter(translateMap(moveset.enPassant)).filter( 
                 ([col, row]) => {
-                    const adjacent_tile = board.viewTile(col-1, row)
-                    if( adjacent_tile.piece instanceof WhitePawn && adjacent_tile.DoubleStepped )
+                    const adjacent_tile = board.viewTile(col, row-1)
+                    if( adjacent_tile.piece instanceof WhitePawn && adjacent_tile.piece.doubleStepped )
                         return !board.viewTile(col, row).piece
                     else 
                         return false
