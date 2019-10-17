@@ -12,16 +12,11 @@ class Controller {
         this.board.render()
         this.canvas.addEventListener('click', mouseEvent => {
             const tile = this.board.tileFromCoordinates( mouseEvent.clientX, mouseEvent.clientY )
-            if( tile ) {
 
+            if( tile ) {
                 if( tile.hasPiece() ) {
                     if( this.selected && this.turn != tile.piece.team.name ) {
-                        const moves = this.selected.potentialMoves
-                        const attack_moves = [...moves.attack, ...(moves.enPassant?moves.enPassant:[])]
-                        const tile_attackable = attack_moves.find( 
-                            ([move_col, move_row]) => move_col == tile.column && move_row == tile.row 
-                        )
-                        if( tile_attackable ) {
+                        if( this.canAttackTile( tile ) ) {
                             this.board.movePiece(this.selected, tile)
                             this.deselect()
                             this.changeTurns()
@@ -30,14 +25,7 @@ class Controller {
                     else {
                         if( tile.piece.team.name == this.turn ) {
                             this.selected = tile.piece
-                            this.board.removeHighlights()
-                            tile.highlighted = true
-
-                            const moves = tile.piece.potentialMoves
-                            const passive_moves = [ ...moves.move, ...(moves.doubleStep?moves.doubleStep:[]) ]
-                            const attack_moves = [ ...moves.attack, ...(moves.enPassant?moves.enPassant:[]) ]
-                            for( let move of [...passive_moves, ...attack_moves] )
-                                this.board.tiles[ move[0] ][ move[1] ].highlighted = true
+                            this.highlightPotentialMoves()
                         }
                     }
 
@@ -93,6 +81,31 @@ class Controller {
             this.turn = 'black'
         else
             this.turn = 'white'
+    }
+
+    highlightPotentialMoves() {
+        assert( this.selected, "Must select a piece to highlight its moves." )
+
+        this.board.removeHighlights()
+        this.selected.tile.highlighted = true
+
+        const moves = this.selected.potentialMoves
+        const passive_moves = [ ...moves.move, ...(moves.doubleStep?moves.doubleStep:[]) ]
+        const attack_moves = [ ...moves.attack, ...(moves.enPassant?moves.enPassant:[]) ]
+
+        for( let move of [...passive_moves, ...attack_moves] )
+            this.board.tiles[ move[0] ][ move[1] ].highlighted = true
+    }
+
+    canAttackTile( tile ) {
+        assert( this.selected, "A piece must be in order to determine what tiles can be attacked." )
+        assert( tile instanceof Tile, "Controller.canAttackTile(tile) requires a tile as a parameter.")
+        const moves = this.selected.potentialMoves
+        const attack_moves = [...moves.attack, ...(moves.enPassant?moves.enPassant:[])]
+        const tile_attackable = attack_moves.find( 
+            ([move_col, move_row]) => move_col == tile.column && move_row == tile.row 
+        )
+        return !!tile_attackable
     }
 
 }

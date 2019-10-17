@@ -7,6 +7,7 @@
     </head>
     <body>
         <canvas id='game'></canvas>
+
         <script src='Board.js'></script>
         <script src='Tile.js'></script>
         <script src='Team.js'></script>
@@ -15,8 +16,10 @@
         <script src='Piece.js'></script>
         <script src='Pawn.js'></script>
         <script src='Rook.js'></script>
+        <script src='Bishop.js'></script>
         <script src='BlackPawn.js'></script>
         <script src='BlackRook.js'></script>
+        <script src='BlackBishop.js'></script>
         <script src='WhitePawn.js'></script>
         <script src='WhiteRook.js'></script>
         <script src='Controller.js'></script>
@@ -45,6 +48,9 @@
             board.movePiece( new WhiteRook( context, board, bot_left_tile ), bot_left_tile )
             const bot_right_tile = board.viewTile(7, 7)
             board.movePiece( new WhiteRook( context, board, bot_right_tile ), bot_right_tile )
+
+            const top_second_left_tile = board.viewTile(1, 0)
+            board.movePiece( new BlackBishop( context, board, top_second_left_tile ), top_second_left_tile )
             
 
             const controller = new Controller(canvas, board)
